@@ -8,7 +8,7 @@ class TestBooksCollector:
     def test_add_new_book_title_less_than40_successfull(self, collector, name):
         collector.add_new_book(name)
 
-        assert len(collector.get_books_genre()) == 1
+        assert len(collector.books_genre) == 1
 
     @pytest.mark.parametrize("name", ['Гордость и предубеждение и зомби и пираты карибского моря', 
                                       'Ехала машина полный бак бензина ехала ехала и в гараж заехала',
@@ -16,14 +16,20 @@ class TestBooksCollector:
     def test_add_new_book_title_greater_than40_unsuccessfull(self, collector, name):
         collector.add_new_book(name)
 
-        assert len(collector.get_books_genre()) == 0
+        assert len(collector.books_genre) == 0
 
     def test_add_new_book_twice_unsuccessfull(self, collector):
         collector.add_new_book('Гордость и предубеждение')
         collector.add_new_book('Гордость и предубеждение')
 
-        assert len(collector.get_books_genre()) == 1
+        assert len(collector.books_genre) == 1
     
+    @pytest.mark.parametrize("name", ['Чебурашка', 'Гордость и предубеждение и зомби', 'Гордость и предубеждение и зомби .......'])
+    def test_get_books_genre_from_list_successfull(self, collector, name):
+        collector.add_new_book(name)
+
+        assert len(collector.get_books_genre()) == 1
+
     @pytest.mark.parametrize('name,genre', [['Гордость и предубеждение', 'Детективы'], ['Преступление и наказание', 'Ужасы']])
     def test_set_book_genre_from_list_successfull(self, collector, name, genre):
         collector.add_new_book(name)
@@ -43,7 +49,7 @@ class TestBooksCollector:
         collector.add_new_book(name)
         collector.set_book_genre(name, genre)
 
-        assert collector.get_book_genre(name) == ''
+        assert collector.books_genre[name] == ''
 
     def test_get_book_genre_not_from_list_empty_string(self, collector):
         name = 'Гордость и предубеждение'
@@ -140,6 +146,13 @@ class TestBooksCollector:
         collector.add_new_book(name)
         collector.add_book_in_favorites(name)
 
+        assert len(collector.favorites) == 1
+
+    @pytest.mark.parametrize('name', ['Гордость и предубеждение', 'Преступление и наказание'])
+    def test_get_list_of_favorites_books_from_books_genre_list_successfull(self, collector, name):
+        collector.add_new_book(name)
+        collector.add_book_in_favorites(name)
+
         assert len(collector.get_list_of_favorites_books()) == 1
 
     def test_add_book_in_favorites_not_from_books_genre_list_empty_list(self, collector):
@@ -149,7 +162,7 @@ class TestBooksCollector:
         name2 = 'Преступление и наказание'
         collector.add_book_in_favorites(name2)
 
-        assert len(collector.get_list_of_favorites_books()) == 0
+        assert len(collector.favorites) == 0
 
     def test_add_book_in_favorites_from_books_genre_list_twice_len_favorites_1(self, collector):
         name = 'Гордость и предубеждение'
@@ -157,7 +170,7 @@ class TestBooksCollector:
         collector.add_book_in_favorites(name)
         collector.add_book_in_favorites(name)
 
-        assert len(collector.get_list_of_favorites_books()) == 1
+        assert len(collector.favorites) == 1
 
     def test_delete_book_from_favorites_book_in_favorites_list_successfull(self, collector):
         name = 'Гордость и предубеждение'
@@ -169,9 +182,9 @@ class TestBooksCollector:
         collector.add_new_book(name2)
         collector.add_book_in_favorites(name2)        
 
-        assert len(collector.get_list_of_favorites_books()) == 2
+        assert len(collector.favorites) == 2
         collector.delete_book_from_favorites(name)
-        assert len(collector.get_list_of_favorites_books()) == 1
+        assert len(collector.favorites) == 1
 
     def test_delete_book_from_favorites_book_not_in_favorites_list_unsuccessfull(self, collector):
         name = 'Гордость и предубеждение'
@@ -181,6 +194,6 @@ class TestBooksCollector:
         name2 = 'Простоквашино'
         collector.add_new_book(name2)
 
-        assert len(collector.get_list_of_favorites_books()) == 1
+        assert len(collector.favorites) == 1
         collector.delete_book_from_favorites(name2)
-        assert len(collector.get_list_of_favorites_books()) == 1
+        assert len(collector.favorites) == 1
